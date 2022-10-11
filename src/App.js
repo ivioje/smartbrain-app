@@ -1,15 +1,12 @@
 import './App.css';
 import 'tachyons';
 import Particles from 'react-tsparticles';
-//import Clarifai from 'clarifai'
 import Navigation from './components/Navigation/Navigation';
 import Logo from './components/logo/Logo';
 import ImageLinkForm from './components/imageLinkForm/ImageLinkForm';
 import Rank from './components/rank/Rank';
 import { useState } from 'react';
 import FaceRecognition from './components/faceRecognition/FaceRecognition';
-
-
 
 const App = () => {
   const [input, setIput] = useState('');
@@ -49,14 +46,21 @@ const App = () => {
   };
 
   const calculateFaceLocation = (data) => {
-   const clarifai = data.outputs[0].model.presets.outputs[0].data.regions[0].region_info.bounding_box;
+   const clarifaiFace = data.outputs[0].model.presets.outputs[0].data.regions[0].region_info.bounding_box;
    const image =  document.getElementById('inputImage');
    const width = Number(image.width);
    const height = Number(image.height);
-   //console.log(width, height);
    return {
-    
+    leftCol: clarifaiFace.left_col * width,
+    topRow: clarifaiFace.top_row * height,
+    rightCol: width - (clarifaiFace.right_col * width),
+    bottomRow: height - (clarifaiFace.bottom_row * height)
    }
+  }
+
+  const displayFaceBox = (box) => {
+    console.log(box);
+    setBox(box)
   }
 
   const onInputChange = (e) => {
@@ -67,12 +71,10 @@ const App = () => {
     setImageUrl(input)
     fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
         .then(response => response.text())
-        .then(result => calculateFaceLocation(JSON.parse(result)))
+        .then(result => displayFaceBox(calculateFaceLocation(JSON.parse(result))))
         .catch(error => console.log('error', error));
 
   }
-
-//console.log(JSON.parse(result).outputs[0].model.presets.outputs[0].data.regions[0].region_info.bounding_box
 
   const particleOptions = {
     particles: {
