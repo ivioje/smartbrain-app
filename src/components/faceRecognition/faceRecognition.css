@@ -1,4 +1,25 @@
+.parent {
+    position: relative;
+}
 .img {
     width: 500px;
     height: auto;
+    border: 1px solid;
+}
+/* .img img {
+    width: 500px;
+    height: auto;
+} */
+.img img {
+    width: 100%;
+    height: 100%;
+}
+.bounding-box {
+    position: absolute;
+    box-shadow: 0 0 0 3px #149df2 inset;
+    /* display: flex;
+    flex-wrap: wrap;
+    justify-content: center; */
+    display: block;
+    cursor: pointer;
 }
