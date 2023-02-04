@@ -10,6 +10,7 @@
     "ajv-errors": "^2.0.1",
     "ajv-formats": "^2.1.1",
     "clarifai": "^2.9.1",
+    "cors": "^2.8.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-parallax-tilt": "^1.7.68",

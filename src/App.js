@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'tachyons';
 import './App.css';
 import Navigation from './components/Navigation/Navigation';
@@ -16,6 +16,14 @@ const App = () => {
   const [box, setBox] = useState({});
   const [route, setRoute] = useState('signin');
   const [isSignedIn, setIsSignedIn] = useState(false)
+
+  // useEffect(() => {
+  //   fetch('http://localhost:3000')
+  //   .then(response => response.json())
+  //   .then(data => console.log(data))
+  
+  // })
+  
 
   const USER_ID = 'ivioje';
   const PAT = '8bd5769ed122489188ea547e12097a67';
