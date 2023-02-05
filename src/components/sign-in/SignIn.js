@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './sign-in.css'
 
-const SignIn = ({ onRouteChange }) => {
+const SignIn = ({ onRouteChange, loadUser }) => {
     const [signInEmail, setSignInEmail] = useState('')
     const [signInPassword, setSignInPassword] = useState('')
 
@@ -14,11 +14,20 @@ const SignIn = ({ onRouteChange }) => {
     }
 
     const onSubmit = () => {
-       fetch('http://localhost:3000/signin', {
-        method: 'post',
-        
-       })
-        onRouteChange('home')
+        fetch('http://localhost:3000/signin', {
+            method: 'post',
+            headers: { 'content-type': 'application/json' },
+            body: JSON.stringify({
+                email: signInEmail,
+                password: signInPassword
+            })
+        }).then(response => response.json())
+            .then(user => {
+                if (user.id) {
+                    loadUser(user)
+                    onRouteChange('home')
+                }
+            })
     }
 
     return (

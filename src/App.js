@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import 'tachyons';
 import './App.css';
 import Navigation from './components/Navigation/Navigation';
@@ -15,15 +15,14 @@ const App = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [box, setBox] = useState({});
   const [route, setRoute] = useState('signin');
-  const [isSignedIn, setIsSignedIn] = useState(false)
-
-  // useEffect(() => {
-  //   fetch('http://localhost:3000')
-  //   .then(response => response.json())
-  //   .then(data => console.log(data))
-  
-  // })
-  
+  const [isSignedIn, setIsSignedIn] = useState(false);
+  const [user, setUser] = useState({
+    id: '',
+    name: '',
+    email: '',
+    entries: 0,
+    joined: ''
+  })
 
   const USER_ID = 'ivioje';
   const PAT = '8bd5769ed122489188ea547e12097a67';
@@ -70,7 +69,7 @@ const App = () => {
       bottomRow: height - (clarifaiFace.bottom_row * height)
     }
 
-    
+
   }
 
   const displayFaceBox = (box) => {
@@ -81,12 +80,26 @@ const App = () => {
     setIput(e.target.value)
   }
 
-  const onButtonSubmit = () => {
+  const onButtonSubmit = (e) => {
+    e.preventDefault();
     setImageUrl(input)
     fetch("https://api.clarifai.com/v2/models/" + MODEL_ID + "/versions/" + MODEL_VERSION_ID + "/outputs", requestOptions)
       .then(response => response.text())
       .then(result => {
         let data = JSON.parse(result);
+        if (result) {
+          fetch('http://localhost:3000/image', {
+            method: 'put',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              id: user.id
+            })
+          })
+            .then(response => response.json())
+            .then(count => {
+              setUser(Object.assign(user, { entries: count }))
+            })
+        }
         displayFaceBox(calculateFaceLocation(data))
       })
       .catch(error => error);
@@ -101,6 +114,18 @@ const App = () => {
     setRoute(route)
   }
 
+  const loadUsers = (data) => {
+    setUser({
+      user: {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        entries: data.entries,
+        joined: data.joined
+      }
+    })
+  }
+
   return (
     <div className='App pa2'>
       <WebParticles />
@@ -108,7 +133,7 @@ const App = () => {
       {route === 'home' ?
         <div>
           <Logo />
-          <Rank />
+          <Rank user={user} />
           <ImageLinkForm
             onInputChange={onInputChange}
             onButtonSubmit={onButtonSubmit}
@@ -117,8 +142,8 @@ const App = () => {
         </div> :
         (
           route === 'signin'
-            ? <SignIn onRouteChange={onRouteChange} /> :
-            <Register onRouteChange={onRouteChange} />
+            ? <SignIn onRouteChange={onRouteChange} loadUser={loadUsers} /> :
+            <Register onRouteChange={onRouteChange} loadUser={loadUsers} />
         )
       }
     </div>
