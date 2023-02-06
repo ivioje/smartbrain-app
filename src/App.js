@@ -10,19 +10,21 @@ import SignIn from './components/sign-in/SignIn';
 import WebParticles from './components/particles/Particles';
 import Register from './components/register/Register';
 
+const initialUserState = {
+  id: '',
+  name: '',
+  email: '',
+  entries: 0,
+  joined: ''
+}
+
 const App = () => {
-  const [input, setIput] = useState('');
+  const [input, setInput] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [box, setBox] = useState({});
   const [route, setRoute] = useState('signin');
   const [isSignedIn, setIsSignedIn] = useState(false);
-  const [user, setUser] = useState({
-    id: '',
-    name: '',
-    email: '',
-    entries: 0,
-    joined: ''
-  })
+  const [user, setUser] = useState(initialUserState)
 
   const USER_ID = 'ivioje';
   const PAT = '8bd5769ed122489188ea547e12097a67';
@@ -68,8 +70,6 @@ const App = () => {
       rightCol: width - (clarifaiFace.right_col * width),
       bottomRow: height - (clarifaiFace.bottom_row * height)
     }
-
-
   }
 
   const displayFaceBox = (box) => {
@@ -77,7 +77,7 @@ const App = () => {
   }
 
   const onInputChange = (e) => {
-    setIput(e.target.value)
+    setInput(e.target.value)
   }
 
   const onButtonSubmit = (e) => {
@@ -91,12 +91,10 @@ const App = () => {
           fetch('http://localhost:3000/image', {
             method: 'put',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: user.id
-            })
+            body: JSON.stringify({ id: user.id })
           })
             .then(response => response.json())
-            .then(count => {
+            .then((count) => {
               setUser(Object.assign(user, { entries: count }))
             })
         }
@@ -107,7 +105,12 @@ const App = () => {
 
   const onRouteChange = (route) => {
     if (route === 'signout') {
-      setIsSignedIn(false)
+      setIsSignedIn(false);
+      setInput('');
+      setImageUrl('');
+      setBox({});
+      setRoute('signin');
+      setUser(initialUserState);
     } else if (route === 'home') {
       setIsSignedIn(true)
     }
@@ -116,13 +119,11 @@ const App = () => {
 
   const loadUsers = (data) => {
     setUser({
-      user: {
-        id: data.id,
-        name: data.name,
-        email: data.email,
-        entries: data.entries,
-        joined: data.joined
-      }
+      id: data.id,
+      name: data.name,
+      email: data.email,
+      entries: data.entries,
+      joined: data.joined
     })
   }
 
@@ -130,6 +131,7 @@ const App = () => {
     <div className='App pa2'>
       <WebParticles />
       <Navigation isSignedIn={isSignedIn} onRouteChange={onRouteChange} />
+
       {route === 'home' ?
         <div>
           <Logo />
